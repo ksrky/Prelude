@@ -1,0 +1,81 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           prelude
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/ksrky/prelude#readme>
+homepage:       https://github.com/ksrky/prelude#readme
+bug-reports:    https://github.com/ksrky/prelude/issues
+author:         ksrk
+maintainer:     example@example.com
+copyright:      2021 ksrk
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/ksrky/prelude
+
+library
+  exposed-modules:
+      AST
+      Evaluator
+      Parser
+      REPL
+  other-modules:
+      Paths_prelude
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , filepath ==1.4.2.1
+    , llvm-hs-pretty ==0.9.0.0
+    , llvm-hs-pure ==9.0.0
+    , megaparsec ==9.1.0
+    , parser-combinators ==1.3.0
+    , text ==1.2.4.1
+  default-language: Haskell2010
+
+executable prelude-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_prelude
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , filepath ==1.4.2.1
+    , llvm-hs-pretty ==0.9.0.0
+    , llvm-hs-pure ==9.0.0
+    , megaparsec ==9.1.0
+    , parser-combinators ==1.3.0
+    , prelude
+    , text ==1.2.4.1
+  default-language: Haskell2010
+
+test-suite prelude-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_prelude
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , filepath ==1.4.2.1
+    , llvm-hs-pretty ==0.9.0.0
+    , llvm-hs-pure ==9.0.0
+    , megaparsec ==9.1.0
+    , parser-combinators ==1.3.0
+    , prelude
+    , text ==1.2.4.1
+  default-language: Haskell2010
