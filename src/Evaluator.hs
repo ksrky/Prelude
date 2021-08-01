@@ -2,11 +2,18 @@ module Evaluator where
 
 import AST
 
-evaluate :: Expr -> Int
+evaluate :: Prog -> Int
 evaluate = eval
 
 class Eval a where
     eval :: a -> Int
+
+instance Eval Prog where
+    eval (Prog ss) = eval (last ss)
+
+instance Eval Stmt where
+    eval (Let i e) = eval e
+    eval (ExprStmt e) = eval e
 
 instance Eval Expr where
     eval (Var v) = 1

@@ -3,4 +3,6 @@ module Main where
 import REPL (repl)
 
 main :: IO ()
-main = repl
+main = do
+    putStrLn "This is Prelude interpreter"
+    repl

@@ -2,12 +2,12 @@ module REPL where
 
 import Data.Text (Text, pack)
 import Evaluator (evaluate)
-import Parser (pExpr)
+import Parser (pProg)
 import Text.Megaparsec (runParser)
 
 repl :: IO ()
 repl = do
     putStr ">> "
     x <- getLine
-    print (evaluate <$> runParser pExpr "" (pack x))
+    print (evaluate <$> runParser pProg "" (pack x))
     repl

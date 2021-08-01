@@ -1,8 +1,8 @@
 module AST where
 
 data Expr
-    = Var String
-    | Int Int
+    = Var Ident
+    | Int Number
     | Negation Expr
     | Sum Expr Expr
     | Subtr Expr Expr
@@ -11,5 +11,10 @@ data Expr
     deriving (Eq, Ord, Show)
 
 data Stmt
-    = Let String Expr
+    = Let Ident Expr
     | ExprStmt Expr
+
+newtype Prog = Prog [Stmt]
+
+type Ident = String
+type Number = Int
