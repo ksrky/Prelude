@@ -1,8 +1,8 @@
 module Main where
 
-import REPL (repl)
+import REPL (start)
 
 main :: IO ()
 main = do
     putStrLn "This is Prelude interpreter"
-    repl
+    start

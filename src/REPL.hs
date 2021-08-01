@@ -1,13 +1,19 @@
 module REPL where
 
+import qualified Data.Map.Strict as M
 import Data.Text (Text, pack)
+import Environment
 import Evaluator (evaluate)
 import Parser (pProg)
 import Text.Megaparsec (runParser)
 
-repl :: IO ()
-repl = do
+start :: IO ()
+start = do
+    repl newEnv
+
+repl :: Env -> IO ()
+repl env = do
     putStr ">> "
     x <- getLine
-    print (evaluate <$> runParser pProg "" (pack x))
-    repl
+    print (evaluate env <$> runParser pProg "" (pack x))
+    repl env
