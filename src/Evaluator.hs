@@ -4,24 +4,34 @@ import AST
 import qualified Data.Map.Strict as M
 import Environment
 
-evaluate :: Env -> Prog -> Maybe Int
+evaluate :: Env -> Prog -> (Maybe Int, Env)
 evaluate = eval
 
 class Eval a where
-    eval :: Env -> a -> Maybe Int
+    eval :: Env -> a -> (Maybe Int, Env)
 
 instance Eval Prog where
-    eval env (Prog ss) = eval env (last ss)
+    eval env (Prog ss) = last (evalProg env ss)
+
+evalProg :: Env -> [Stmt] -> [(Maybe Int, Env)]
+evalProg env [] = []
+evalProg env (s : ss) = result : evalProg nextEnv ss
+  where
+    result = eval env s
+    nextEnv = snd result
 
 instance Eval Stmt where
-    eval env (Let i e) = eval env e -- tmp
+    eval env (Let i e) = (fst r, envSet (snd r) i v)
+      where
+        r = eval env e
+        Just v = fst r
     eval env (ExprStmt e) = eval env e
 
 instance Eval Expr where
-    eval (Store s) (Var v) = M.lookup v s
-    eval env (Int i) = Just i
-    eval env (Negation n) = (0 -) <$> eval env n
-    eval env (Sum l r) = (+) <$> eval env l <*> eval env r
-    eval env (Subtr l r) = (-) <$> eval env l <*> eval env r
-    eval env (Product l r) = (*) <$> eval env l <*> eval env r
-    eval env (Division l r) = div <$> eval env l <*> eval env r
+    eval (Store s) (Var v) = (M.lookup v s, Store s)
+    eval env (Int i) = (Just i, env)
+    eval env (Negation e) = ((0 -) <$> fst (eval env e), env)
+    eval env (Sum l r) = ((+) <$> fst (eval env l) <*> fst (eval env r), env)
+    eval env (Subtr l r) = ((-) <$> fst (eval env l) <*> fst (eval env r), env)
+    eval env (Product l r) = ((*) <$> fst (eval env l) <*> fst (eval env r), env)
+    eval env (Division l r) = (div <$> fst (eval env l) <*> fst (eval env r), env)
