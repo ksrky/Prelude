@@ -1,6 +1,6 @@
 module Environment where
 
-import AST
+import AST (Ident)
 import qualified Data.Map.Strict as M
 
 newtype Env = Store (M.Map Ident Int) deriving (Show)

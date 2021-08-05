@@ -2,15 +2,29 @@
 
 module Parser where
 
-import AST
+import AST (Expr (..), Ident, Prog (..), Stmt (..))
 import Control.Monad.Combinators.Expr (
     Operator (InfixL, Postfix, Prefix),
     makeExprParser,
  )
 import Data.Text (Text)
 import Data.Void (Void)
-import Text.Megaparsec
-import Text.Megaparsec.Char
+import Text.Megaparsec (
+    Parsec,
+    between,
+    choice,
+    endBy,
+    many,
+    manyTill,
+    sepBy,
+    (<?>),
+ )
+import Text.Megaparsec.Char (
+    alphaNumChar,
+    char,
+    letterChar,
+    space1,
+ )
 import qualified Text.Megaparsec.Char.Lexer as L
 
 type Parser = Parsec Void Text
@@ -38,10 +52,7 @@ stringLiteral = char '\"' *> manyTill L.charLiteral (char '\"')
 
 -- Expression
 pVariable :: Parser Expr
-pVariable =
-    Var
-        <$> lexeme
-            ((:) <$> letterChar <*> many alphaNumChar <?> "variable")
+pVariable = Var <$> pIdent
 
 pInteger :: Parser Expr
 pInteger = Int <$> lexeme L.decimal
@@ -86,6 +97,9 @@ postfix name f = Postfix (f <$ symbol name)
 -- Statement
 pLet :: Parser Stmt
 pLet = Let <$> between (symbol "let") (symbol "=") pIdent <*> pExpr
+
+pIdents :: Parser [Ident]
+pIdents = pIdent `sepBy` symbol ","
 
 pIdent :: Parser Ident
 pIdent =

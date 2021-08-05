@@ -1,8 +1,8 @@
 module Evaluator where
 
-import AST
+import AST (Expr (..), Prog (..), Stmt (..))
 import qualified Data.Map.Strict as M
-import Environment
+import Environment (Env (..), envSet)
 
 evaluate :: Env -> Prog -> (Maybe Int, Env)
 evaluate = eval
@@ -21,7 +21,7 @@ evalProg env (s : ss) = result : evalProg nextEnv ss
     nextEnv = snd result
 
 instance Eval Stmt where
-    eval env (Let i e) = (fst r, envSet (snd r) i v)
+    eval env (Let i e) = (fst r, envSet env i v)
       where
         r = eval env e
         Just v = fst r
