@@ -4,34 +4,38 @@ import AST (Expr (..), Prog (..), Stmt (..))
 import qualified Data.Map.Strict as M
 import Environment (Env (..), envSet)
 
-evaluate :: Env -> Prog -> (Maybe Int, Env)
-evaluate = eval
+data Result = Result {environment :: Env, value :: Maybe Int}
+
+evaluate :: Env -> Prog -> Result
+evaluate env = eval Result{environment = env, value = Nothing}
 
 class Eval a where
-    eval :: Env -> a -> (Maybe Int, Env)
+    eval :: Result -> a -> Result
 
 instance Eval Prog where
-    eval env (Prog ss) = last (evalProg env ss)
+    eval res (Prog ss) = last (evalProg res ss)
 
-evalProg :: Env -> [Stmt] -> [(Maybe Int, Env)]
-evalProg env [] = []
-evalProg env (s : ss) = result : evalProg nextEnv ss
+evalProg :: Result -> [Stmt] -> [Result]
+evalProg res [] = []
+evalProg res (s : ss) = res : evalProg res ss
   where
-    result = eval env s
-    nextEnv = snd result
+    res' = eval res s
 
 instance Eval Stmt where
-    eval env (Let i e) = (fst r, envSet env i v)
+    eval res (Let i e) = case value res' of
+        Just v -> res{environment = envSet (environment res') i v}
+        Nothing -> res'
       where
-        r = eval env e
-        Just v = fst r
-    eval env (ExprStmt e) = eval env e
+        res' = eval res e
+    eval res (ExprStmt e) = eval res e
 
 instance Eval Expr where
-    eval (Store s) (Var v) = (M.lookup v s, Store s)
-    eval env (Int i) = (Just i, env)
-    eval env (Negation e) = ((0 -) <$> fst (eval env e), env)
-    eval env (Sum l r) = ((+) <$> fst (eval env l) <*> fst (eval env r), env)
-    eval env (Subtr l r) = ((-) <$> fst (eval env l) <*> fst (eval env r), env)
-    eval env (Product l r) = ((*) <$> fst (eval env l) <*> fst (eval env r), env)
-    eval env (Division l r) = (div <$> fst (eval env l) <*> fst (eval env r), env)
+    eval res (Var v) = Result{environment = Store s, value = M.lookup v s}
+      where
+        Store s = environment res
+    eval res (Int i) = res{value = Just i}
+    eval res (Negation e) = res{value = (0 -) <$> value (eval res e)}
+    eval res (Sum l r) = res{value = (+) <$> value (eval res l) <*> value (eval res r)}
+    eval res (Subtr l r) = res{value = (-) <$> value (eval res l) <*> value (eval res r)}
+    eval res (Product l r) = res{value = (*) <$> value (eval res l) <*> value (eval res r)}
+    eval res (Division l r) = res{value = div <$> value (eval res l) <*> value (eval res r)}
