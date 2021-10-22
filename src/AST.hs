@@ -13,8 +13,9 @@ data Expr
 data Stmt
     = Let Ident Expr
     | ExprStmt Expr
+    deriving (Show)
 
-newtype Prog = Prog [Stmt]
+newtype Prog = Prog [Stmt] deriving (Show)
 
 type Ident = String
 type Number = Int

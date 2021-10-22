@@ -1,15 +1,27 @@
 module Environment where
 
-import AST (Ident)
+import AST (Ident, Number)
+import Object (Object (Number))
+
 import qualified Data.Map.Strict as M
 
-newtype Env = Store (M.Map Ident Int) deriving (Show)
+data Env = Env {outer :: Maybe Env, store :: M.Map Ident Object}
 
 newEnv :: Env
-newEnv = Store M.empty
+newEnv = Env{outer = Nothing, store = M.empty}
 
-envGet :: Env -> Ident -> Maybe Int
-envGet (Store s) name = M.lookup name s
+newEnclosedEnv :: Env -> Env
+newEnclosedEnv outer = Env{outer = Just outer, store = M.empty}
 
-envSet :: Env -> Ident -> Int -> Env
-envSet (Store s) name value = Store (M.insert name value s)
+envGet :: Env -> Ident -> Maybe Object
+envGet env name = M.lookup name (store env)
+
+envSet :: Env -> Ident -> Object -> Env
+envSet env name value = env{store = M.insert name value (store env)}
+
+getNumber :: Env -> Ident -> Maybe Number
+getNumber env name = case M.lookup name (store env) of
+    Just obj -> case obj of
+        Number n -> Just n
+        _ -> Nothing
+    Nothing -> Nothing

@@ -2,11 +2,9 @@ module REPL where
 
 import Environment (Env, newEnv)
 import Evaluator
-import Parser (pProg)
+import Parser
 
-import Data.Either (isLeft)
 import qualified Data.Map.Strict as M
-import Data.Text (Text, pack)
 import System.Console.Haskeline (
     InputT,
     defaultSettings,
@@ -15,7 +13,6 @@ import System.Console.Haskeline (
     outputStrLn,
     runInputT,
  )
-import Text.Megaparsec (errorBundlePretty, parse)
 
 version :: String
 version = "1.0.0"
@@ -37,18 +34,17 @@ repl env = do
 
 repl' :: Env -> String -> InputT IO ()
 repl' env input = do
-    let evaluated = evaluate env <$> parse pProg "" (pack input)
+    let evaluated = evaluate env <$> parseProgram input
     case evaluated of
         Left err -> do
-            -- Parse Error
-            outputStrLn $ errorBundlePretty err
+            outputStrLn $ getParseError err
             repl env
         Right res -> do
             case value res of
                 Just v -> do
                     outputStrLn $ show v
                     repl $ environment res
-                Nothing -> repl env
+                Nothing -> repl $ environment res
 
 command :: Env -> String -> InputT IO ()
 command env cmd = case cmd of
