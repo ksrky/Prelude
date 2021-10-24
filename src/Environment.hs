@@ -1,7 +1,7 @@
 module Environment where
 
-import AST (Ident, Number)
-import Object (Object (Number))
+import AST (Ident)
+import Object
 
 import qualified Data.Map.Strict as M
 
@@ -18,10 +18,3 @@ envGet env name = M.lookup name (store env)
 
 envSet :: Env -> Ident -> Object -> Env
 envSet env name value = env{store = M.insert name value (store env)}
-
-getNumber :: Env -> Ident -> Maybe Number
-getNumber env name = case M.lookup name (store env) of
-    Just obj -> case obj of
-        Number n -> Just n
-        _ -> Nothing
-    Nothing -> Nothing

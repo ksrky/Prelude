@@ -17,8 +17,8 @@ pReturn = Return <$> skip (symbol "return") pExpr
 pIf :: Parser Stmt
 pIf =
     If <$> skip (symbol "if") (between (symbol "(") (symbol ")") pExpr)
-        <*> between (symbol "{") (symbol "}") pBlock
-        <*> skip (symbol "else") (between (symbol "{") (symbol "}") pBlock)
+        <*> pBlock
+        <*> skip (symbol "else") pBlock
 
 pParameters :: Parser [Ident]
 pParameters = pIdent `sepBy` symbol ","
@@ -30,7 +30,7 @@ pExprStmt :: Parser Stmt
 pExprStmt = ExprStmt <$> lexeme pExpr
 
 pBlock :: Parser Block
-pBlock = between (symbol "{") (symbol "}") (pStmt `sepBy` symbol ".")
+pBlock = Block <$> between (symbol "{") (symbol "}") (pStmt `sepBy` symbol ".")
 
 pStmt :: Parser Stmt
 pStmt =

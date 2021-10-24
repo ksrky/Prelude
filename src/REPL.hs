@@ -1,8 +1,8 @@
 module REPL where
 
 import Environment (Env, newEnv)
-import Evaluator
-import Parser
+import Evaluator (Result (environment, value), evaluate)
+import Parser (getParseError, parseProgram)
 
 import qualified Data.Map.Strict as M
 import System.Console.Haskeline (

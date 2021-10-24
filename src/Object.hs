@@ -1,11 +1,15 @@
+{-# LANGUAGE FlexibleInstances #-}
+
 module Object where
 
 import AST
 
 data Object
-    = Number Number
-    | String String
+    = IntVal Int
+    | StringVal String
+    | BoolVal Bool
 
 instance Show Object where
-    show (Number n) = show n
-    show (String s) = show s
+    show (IntVal i) = show i
+    show (StringVal s) = show s
+    show (BoolVal b) = show b

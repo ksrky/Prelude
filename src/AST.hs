@@ -1,17 +1,18 @@
 module AST where
 
 type Ident = String
-type Number = Int
 
 data Expr
     = Var Ident
-    | Int Number
+    | Int Int
+    | Str String
+    | Bool Bool
     | Not Expr
-    | Negation Expr
-    | Sum Expr Expr
-    | Subtr Expr Expr
-    | Product Expr Expr
-    | Division Expr Expr
+    | Negate Expr
+    | Add Expr Expr
+    | Subtract Expr Expr
+    | Multiple Expr Expr
+    | Divide Expr Expr
     | Greater Expr Expr
     | Less Expr Expr
     | Equal Expr Expr
@@ -19,7 +20,7 @@ data Expr
     | Call Ident [Expr]
     deriving (Eq, Ord, Show)
 
-type Block = [Stmt]
+newtype Block = Block [Stmt] deriving (Show)
 type Parameters = [Ident]
 
 data Stmt

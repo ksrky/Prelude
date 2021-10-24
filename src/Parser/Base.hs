@@ -22,6 +22,7 @@ import Text.Megaparsec.Char (
     char,
     letterChar,
     space1,
+    string,
  )
 import qualified Text.Megaparsec.Char.Lexer as L
 
@@ -49,9 +50,13 @@ startBy p sep = many (sep *> p)
 pIdent :: Parser Ident
 pIdent = (:) <$> letterChar <*> many alphaNumChar <?> "<ident>"
 
--- String Literal
 charLiteral :: Parser Char
 charLiteral = between (char '\'') (char '\'') L.charLiteral
 
 stringLiteral :: Parser String
 stringLiteral = char '\"' *> manyTill L.charLiteral (char '\"')
+
+boolLiteral :: Parser Bool
+boolLiteral =
+    True <$ string "True"
+        <|> False <$ string "False"
