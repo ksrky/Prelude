@@ -2,15 +2,8 @@
 
 module Parser.Expression where
 
-import AST (Expr (..))
-import Parser.Base (
-    Parser,
-    boolLiteral,
-    lexeme,
-    pIdent,
-    stringLiteral,
-    symbol,
- )
+import AST
+import Parser.Base
 
 import Control.Monad.Combinators.Expr (
     Operator (InfixL, Postfix, Prefix),
@@ -29,14 +22,8 @@ pInteger = Int <$> lexeme L.decimal
 pString :: Parser Expr
 pString = Str <$> stringLiteral
 
-pBool :: Parser Expr
-pBool = Bool <$> boolLiteral
-
 pCall :: Parser Expr
 pCall = Call <$> lexeme pIdent <*> between (symbol "(") (symbol ")") (pExpr `sepBy` symbol ",")
-
-parens :: Parser a -> Parser a
-parens = between (symbol "(") (symbol ")")
 
 pTerm :: Parser Expr
 pTerm =
@@ -53,8 +40,7 @@ pExpr = lexeme $ makeExprParser pTerm operatorTable
 operatorTable :: [[Operator Parser Expr]]
 operatorTable =
     [
-        [ prefix "!" Not
-        , prefix "-" Negate
+        [ prefix "-" Negate
         , prefix "+" id
         ]
     ,
@@ -64,12 +50,6 @@ operatorTable =
     ,
         [ binary "+" Add
         , binary "-" Subtract
-        ]
-    ,
-        [ binary ">" Greater
-        , binary "<" Less
-        , binary "==" Equal
-        , binary "!=" NotEqual
         ]
     ]
 

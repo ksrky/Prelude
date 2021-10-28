@@ -6,28 +6,33 @@ data Expr
     = Var Ident
     | Int Int
     | Str String
-    | Bool Bool
-    | Not Expr
     | Negate Expr
     | Add Expr Expr
     | Subtract Expr Expr
     | Multiple Expr Expr
     | Divide Expr Expr
+    | Call Ident [Expr]
+    deriving (Show)
+
+data BoolExpr
+    = Bool Bool
     | Greater Expr Expr
     | Less Expr Expr
     | Equal Expr Expr
     | NotEqual Expr Expr
-    | Call Ident [Expr]
-    deriving (Eq, Ord, Show)
+    | And BoolExpr BoolExpr
+    | Or BoolExpr BoolExpr
+    | Not BoolExpr
+    deriving (Show)
 
 newtype Block = Block [Stmt] deriving (Show)
 type Parameters = [Ident]
 
 data Stmt
-    = Let Ident Expr
-    | Return Expr
-    | If Expr Block Block
-    | Function Parameters Block
+    = LetStmt Ident Expr
+    | ReturnStmt Expr
+    | IfStmt BoolExpr Block Block
+    | FunctionStmt Ident Parameters Block
     | ExprStmt Expr
     deriving (Show)
 

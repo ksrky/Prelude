@@ -28,9 +28,9 @@ library
       AST
       Environment
       Evaluator
-      Object
       Parser
       Parser.Base
+      Parser.BoolExpression
       Parser.Expression
       Parser.Statement
       REPL

@@ -2,42 +2,42 @@
 
 module Parser.Statement where
 
-import AST
-import Parser.Base (Parser, lexeme, pIdent, skip, startBy, symbol)
+import AST (Block (..), Ident, Stmt (..))
+import Parser.Base (Parser, lexeme, pIdent, skip, symbol)
+import Parser.BoolExpression (pBoolExpr)
 import Parser.Expression (pExpr)
 
 import Text.Megaparsec (between, choice, sepBy)
 
-pLet :: Parser Stmt
-pLet = Let <$> between (symbol "let") (symbol "=") (lexeme pIdent) <*> pExpr
+pLetStmt :: Parser Stmt
+pLetStmt = LetStmt <$> between (symbol "let") (symbol "=") (lexeme pIdent) <*> pExpr
 
-pReturn :: Parser Stmt
-pReturn = Return <$> skip (symbol "return") pExpr
+pReturnStmt :: Parser Stmt
+pReturnStmt = ReturnStmt <$> skip (symbol "return") pExpr
 
-pIf :: Parser Stmt
-pIf =
-    If <$> skip (symbol "if") (between (symbol "(") (symbol ")") pExpr)
+pIfStmt :: Parser Stmt
+pIfStmt =
+    IfStmt <$> skip (symbol "if") (between (symbol "(") (symbol ")") pBoolExpr)
         <*> pBlock
         <*> skip (symbol "else") pBlock
 
+pFunctionStmt :: Parser Stmt
+pFunctionStmt = FunctionStmt <$> pIdent <*> between (symbol "(") (symbol ")") pParameters <*> pBlock
+
 pParameters :: Parser [Ident]
-pParameters = pIdent `sepBy` symbol ","
-
-pFunction :: Parser Stmt
-pFunction = Function <$> skip (symbol "func") (between (symbol "(") (symbol ")") pParameters) <*> pBlock
-
-pExprStmt :: Parser Stmt
-pExprStmt = ExprStmt <$> lexeme pExpr
+pParameters = lexeme pIdent `sepBy` symbol ","
 
 pBlock :: Parser Block
 pBlock = Block <$> between (symbol "{") (symbol "}") (pStmt `sepBy` symbol ".")
 
+pExprStmt :: Parser Stmt
+pExprStmt = ExprStmt <$> lexeme pExpr
+
 pStmt :: Parser Stmt
 pStmt =
     choice
-        [ pLet
-        , pReturn
-        , pIf
-        , pFunction
+        [ pLetStmt
+        , pReturnStmt
+        , pIfStmt
         , pExprStmt
         ]

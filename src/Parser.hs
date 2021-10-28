@@ -23,4 +23,4 @@ getParseError :: ParseErrorBundle Text Void -> String
 getParseError = errorBundlePretty
 
 pProg :: Parser Prog
-pProg = Prog <$> pStmt `sepEndBy` symbol "."
+pProg = Prog <$> pStmt `sepEndBy` symbol ";"

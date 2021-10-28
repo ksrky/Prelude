@@ -50,6 +50,9 @@ startBy p sep = many (sep *> p)
 pIdent :: Parser Ident
 pIdent = (:) <$> letterChar <*> many alphaNumChar <?> "<ident>"
 
+parens :: Parser a -> Parser a
+parens = between (symbol "(") (symbol ")")
+
 charLiteral :: Parser Char
 charLiteral = between (char '\'') (char '\'') L.charLiteral
 
