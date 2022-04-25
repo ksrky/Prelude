@@ -77,8 +77,13 @@ prefix, postfix :: Text -> (Expr -> Expr) -> Operator Parser Expr
 prefix name f = Prefix (f <$ symbol name)
 postfix name f = Postfix (f <$ symbol name)
 
+pStmt :: Parser Stmt
+pStmt =
+        try (LetStmt <$> skip (symbol "let") pIdent <* symbol "=" <*> pExpr)
+                <|> ExprStmt <$> pExpr
+
 pProg :: Parser Prog
-pProg = Prog <$> pExpr `sepEndBy` symbol ";"
+pProg = Prog <$> pStmt `sepEndBy` symbol ";"
 
 parseProg :: String -> Either (ParseErrorBundle Text Void) Prog
 parseProg input = parse pProg "" (pack input)

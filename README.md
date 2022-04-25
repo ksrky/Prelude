@@ -18,14 +18,14 @@ $ stack runghc src/REPL.hs
 
 ## Build & Run
 ```command
-$ stack run testcases/test1.pld
-$ llc testcases/test1.ll
-$ gcc testcases/test1.s -o testcases/test1
-$ ./testcases/test1
+$ stack run examples/ex.pld
+$ llc examples/ex.ll
+$ gcc examples/ex.s -o examples/ex
+$ ./examples/ex
 ```
 
 ### Check output easily
 ```command
-$ stack run testcases/test1.pld
-$ lli testcases/test1.ll
+$ stack run examples/ex.pld
+$ lli examples/ex.ll
 ```

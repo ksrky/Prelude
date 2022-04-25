@@ -14,8 +14,8 @@ import System.Console.Haskeline (
         runInputT,
  )
 
-start :: IO ()
-start = do
+main :: IO ()
+main = do
         putStrLn "Prelude CLI"
         putStrLn "type :h to get help."
         runInputT defaultSettings (repl newEnv)
@@ -45,7 +45,6 @@ repl' env input = do
                                 Just (out, env') -> do
                                         outputStrLn $ show out
                                         repl env'
-                        return undefined
 
 command :: Env -> String -> InputT IO ()
 command env cmd = case cmd of
