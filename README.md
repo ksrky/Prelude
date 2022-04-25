@@ -10,3 +10,22 @@ $ stack ghci
 > parseTest pProg (pack "1+2;3*4")
 Prog [Add (Int 1) (Int 2),Mul (Int 3) (Int 4)]
 ```
+
+## REPL
+```command
+$ stack runghc src/REPL.hs
+```
+
+## Build & Run
+```command
+$ stack run testcases/test1.pld
+$ llc testcases/test1.ll
+$ gcc testcases/test1.s -o testcases/test1
+$ ./testcases/test1
+```
+
+### Check output easily
+```command
+$ stack run testcases/test1.pld
+$ lli testcases/test1.ll
+```

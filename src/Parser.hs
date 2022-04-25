@@ -6,8 +6,8 @@ import AST
 
 import Control.Applicative (Alternative (many, (<|>)))
 import Control.Monad.Combinators.Expr (
-    Operator (InfixL, Postfix, Prefix),
-    makeExprParser,
+        Operator (InfixL, Postfix, Prefix),
+        makeExprParser,
  )
 import Data.Text (Text, pack)
 import Data.Void (Void)
@@ -19,10 +19,10 @@ type Parser = Parsec Void Text
 
 sc :: Parser ()
 sc =
-    L.space
-        space1
-        (L.skipLineComment "//")
-        (L.skipBlockComment "/*" "*/")
+        L.space
+                space1
+                (L.skipLineComment "//")
+                (L.skipBlockComment "/*" "*/")
 
 lexeme :: Parser a -> Parser a
 lexeme = L.lexeme sc
@@ -56,19 +56,19 @@ pExpr = lexeme $ makeExprParser pTerm operatorTable
 
 operatorTable :: [[Operator Parser Expr]]
 operatorTable =
-    [
-        [ prefix "-" Neg
-        , prefix "+" id
+        [
+                [ prefix "-" Neg
+                , prefix "+" id
+                ]
+        ,
+                [ binary "*" Mul
+                , binary "/" Div
+                ]
+        ,
+                [ binary "+" Add
+                , binary "-" Sub
+                ]
         ]
-    ,
-        [ binary "*" Mul
-        , binary "/" Div
-        ]
-    ,
-        [ binary "+" Add
-        , binary "-" Sub
-        ]
-    ]
 
 binary :: Text -> (Expr -> Expr -> Expr) -> Operator Parser Expr
 binary name f = InfixL (f <$ symbol name)
