@@ -10,7 +10,7 @@ import Control.Monad.Combinators.Expr (
     makeExprParser,
  )
 import Data.Text (Text)
-import Text.Megaparsec (between, choice, sepBy)
+import Text.Megaparsec (MonadParsec (try), between, sepBy, (<|>))
 import qualified Text.Megaparsec.Char.Lexer as L
 
 pVariable :: Parser Expr
@@ -26,13 +26,7 @@ pCall :: Parser Expr
 pCall = Call <$> lexeme pIdent <*> between (symbol "(") (symbol ")") (pExpr `sepBy` symbol ",")
 
 pTerm :: Parser Expr
-pTerm =
-    choice
-        [ parens pExpr
-        , pVariable
-        , pInteger
-        , pCall
-        ]
+pTerm = try (parens pExpr) <|> pCall <|> pVariable <|> pInteger <|> pString
 
 pExpr :: Parser Expr
 pExpr = lexeme $ makeExprParser pTerm operatorTable

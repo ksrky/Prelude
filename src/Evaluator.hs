@@ -17,7 +17,7 @@ instance Eval Prog where
 
 evalProg :: Result -> [Stmt] -> [Result]
 evalProg res [] = []
-evalProg res (s : ss) = res' : evalProg res ss
+evalProg res (s : ss) = res' : evalProg res' ss
   where
     res' = eval res s
 
@@ -84,5 +84,5 @@ evalExpr env (Multiple l r) = (*) <$> evalExpr env l <*> evalExpr env r
 evalExpr env (Divide l r) = div <$> evalExpr env l <*> evalExpr env r
 evalExpr env (Call i es) = case envGet env i of
     Just (FunctionVal f) -> error "" --evalBlock (environment f) b
-    _ -> Nothing
+    _ -> error "Noth"
 evalExpr env _ = Nothing

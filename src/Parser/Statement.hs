@@ -22,7 +22,7 @@ pIfStmt =
         <*> skip (symbol "else") pBlock
 
 pFunctionStmt :: Parser Stmt
-pFunctionStmt = FunctionStmt <$> pIdent <*> between (symbol "(") (symbol ")") pParameters <*> pBlock
+pFunctionStmt = FunctionStmt <$> skip (symbol "func") pIdent <*> between (symbol "(") (symbol ")") pParameters <*> pBlock
 
 pParameters :: Parser [Ident]
 pParameters = lexeme pIdent `sepBy` symbol ","
@@ -39,5 +39,6 @@ pStmt =
         [ pLetStmt
         , pReturnStmt
         , pIfStmt
+        , pFunctionStmt
         , pExprStmt
         ]

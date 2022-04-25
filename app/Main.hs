@@ -3,5 +3,5 @@ module Main where
 import REPL (start)
 
 main :: IO ()
-main = do
-    start
+main = putStrLn "Prelude" {-do
+    start-}
