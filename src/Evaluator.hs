@@ -3,12 +3,13 @@ module Evaluator where
 import AST
 import Control.Monad.State
 import Environment
+import Error
 
-evaluate :: Prog -> StateT Env Maybe Object
+evaluate :: Prog -> StateT Env (Either Error) Integer
 evaluate = eval
 
 class Eval a where
-        eval :: a -> StateT Env Maybe Object
+        eval :: a -> StateT Env (Either Error) Integer
 
 instance Eval Prog where
         eval (Prog es) = do
@@ -21,24 +22,22 @@ instance Eval Stmt where
                 val <- eval e
                 env <- get
                 put $ envSet env i val
-                return ObjNull
+                return val
 
 instance Eval Expr where
-        eval (Var i) = do
-                env <- get
-                let Just val = envGet env i
-                return val
-        eval (Int i) = return $ ObjInt i
-        eval (Neg e) = eval e
+        eval (Var i) = StateT $ \env -> do
+                case envGet env i of
+                        Just val -> return (val, env)
+                        Nothing -> returnErr $ "variable not found: " ++ i
+        eval (Int i) = return i
+        eval (Neg e) = (0 -) <$> eval e
         eval (Add l r) = binop (+) l r
         eval (Sub l r) = binop (-) l r
         eval (Mul l r) = binop (*) l r
         eval (Div l r) = binop div l r
 
-binop :: (Integer -> Integer -> Integer) -> Expr -> Expr -> StateT Env Maybe Object
+binop :: (Integer -> Integer -> Integer) -> Expr -> Expr -> StateT Env (Either Error) Integer
 binop f l r = do
         l' <- eval l
         r' <- eval r
-        return $ case (l', r') of
-                (ObjInt l'', ObjInt r'') -> ObjInt (f l'' r'')
-                _ -> ObjErr "error"
+        return (f l' r')

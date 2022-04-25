@@ -28,6 +28,7 @@ library
       AST
       Compiler
       Environment
+      Error
       Evaluator
       Parser
       REPL

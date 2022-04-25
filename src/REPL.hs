@@ -39,10 +39,10 @@ repl' env input = do
                 Right ast -> do
                         let res = evaluate ast `runStateT` env
                         case res of
-                                Nothing -> do
-                                        outputStrLn "evaluation error"
+                                Left err -> do
+                                        outputStrLn $ show err
                                         repl env
-                                Just (out, env') -> do
+                                Right (out, env') -> do
                                         outputStrLn $ show out
                                         repl env'
 

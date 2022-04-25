@@ -79,7 +79,7 @@ postfix name f = Postfix (f <$ symbol name)
 
 pStmt :: Parser Stmt
 pStmt =
-        try (LetStmt <$> skip (symbol "let") pIdent <* symbol "=" <*> pExpr)
+        try (LetStmt <$> skip (symbol "let") (lexeme pIdent) <* symbol "=" <*> pExpr)
                 <|> ExprStmt <$> pExpr
 
 pProg :: Parser Prog
