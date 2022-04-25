@@ -1,10 +1,10 @@
 module REPL where
 
-import Environment (Env, newEnv)
-import Evaluator (Result (environment, value), evaluate)
-import Parser (getParseError, parseProgram)
+import Control.Monad.State
+import Environment
+import Evaluator
+import Parser
 
-import qualified Data.Map.Strict as M
 import System.Console.Haskeline (
     InputT,
     defaultSettings,
@@ -14,12 +14,9 @@ import System.Console.Haskeline (
     runInputT,
  )
 
-version :: String
-version = "1.0.0"
-
 start :: IO ()
 start = do
-    putStrLn ("Prelude CLI version " ++ version ++ ".")
+    putStrLn "Prelude CLI"
     putStrLn "type :h to get help."
     runInputT defaultSettings (repl newEnv)
 
@@ -34,17 +31,21 @@ repl env = do
 
 repl' :: Env -> String -> InputT IO ()
 repl' env input = do
-    let evaluated = evaluate env <$> parseProgram input
-    case evaluated of
-        Left err -> do
-            outputStrLn $ getParseError err
+    let p = parseProg input
+    case p of
+        Left perr -> do
+            outputStrLn $parseError perr
             repl env
-        Right res -> do
-            case value res of
-                Just v -> do
-                    outputStrLn $ show v
-                    repl $ environment res
-                Nothing -> repl $ environment res
+        Right ast -> do
+            let res = evaluate ast `runStateT` env
+            case res of
+                Nothing -> do
+                    outputStrLn "evaluation error"
+                    repl env
+                Just (out, env') -> do
+                    outputStrLn $ show out
+                    repl env'
+            return undefined
 
 command :: Env -> String -> InputT IO ()
 command env cmd = case cmd of
@@ -59,5 +60,5 @@ command env cmd = case cmd of
 printHelp :: InputT IO ()
 printHelp = do
     outputStrLn "Commands"
-    outputStrLn "  :q      quit"
-    outputStrLn "  :h      print usage"
+    outputStrLn "\t:q\tquit"
+    outputStrLn "\t:h\tprint usage"

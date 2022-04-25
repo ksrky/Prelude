@@ -1,7 +1,6 @@
 module Main where
 
-import REPL (start)
+import REPL
 
 main :: IO ()
-main = putStrLn "Prelude" {-do
-    start-}
+main = start

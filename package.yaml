@@ -28,8 +28,8 @@ dependencies:
 - llvm-hs-pretty
 - parser-combinators
 - containers
-- binary
 - haskeline
+- mtl
 
 library:
   source-dirs: src
