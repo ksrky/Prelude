@@ -10,6 +10,11 @@ data Expr
         | Sub Expr Expr
         | Mul Expr Expr
         | Div Expr Expr
-        deriving (Show)
+        deriving (Eq, Show)
 
-newtype Prog = Prog [Expr] deriving (Show)
+data Stmt
+        = ExprStmt Expr
+        | LetStmt Ident Expr
+        deriving (Eq, Show)
+
+newtype Prog = Prog [Stmt] deriving (Eq, Show)
