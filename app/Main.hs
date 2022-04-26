@@ -1,12 +1,5 @@
 module Main where
 
-{-
-import REPL (start)
-
-main :: IO ()
-main = start
--}
-
 import Compiler (compile)
 import Data.Text (unpack)
 import qualified Data.Text.IO as T

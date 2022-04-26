@@ -16,14 +16,6 @@ instance Eval Prog where
                 res <- mapM eval es
                 return $ last res
 
-instance Eval Stmt where
-        eval (ExprStmt e) = eval e
-        eval (LetStmt i e) = do
-                val <- eval e
-                env <- get
-                put $ envSet env i val
-                return val
-
 instance Eval Expr where
         eval (Var i) = StateT $ \env -> do
                 case envGet env i of
@@ -35,6 +27,11 @@ instance Eval Expr where
         eval (Sub l r) = binop (-) l r
         eval (Mul l r) = binop (*) l r
         eval (Div l r) = binop div l r
+        eval (Assign i e) = do
+                val <- eval e
+                env <- get
+                put $ envSet env i val
+                return val
 
 binop :: (Integer -> Integer -> Integer) -> Expr -> Expr -> StateT Env (Either Error) Integer
 binop f l r = do

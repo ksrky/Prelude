@@ -37,24 +37,18 @@ class LLVMOperand a where
 instance LLVMOperand AST.Prog where
         toOperand (AST.Prog ss) = toOperand (head ss)
 
-instance LLVMOperand AST.Stmt where
-        toOperand (AST.ExprStmt e) = toOperand e
-        toOperand (AST.LetStmt i e) = undefined
-
 instance LLVMOperand Integer where
         toOperand n = return (int32 n)
-
-zero :: AST.Expr
-zero = AST.Int 0
 
 instance LLVMOperand AST.Expr where
         toOperand (AST.Var i) = undefined
         toOperand (AST.Int i) = toOperand i
-        toOperand (AST.Neg e) = binop sub zero e
+        toOperand (AST.Neg e) = binop sub (AST.Int 0) e
         toOperand (AST.Add l r) = binop add l r
         toOperand (AST.Sub l r) = binop sub l r
         toOperand (AST.Mul l r) = binop mul l r
         toOperand (AST.Div l r) = binop sdiv l r
+        toOperand (AST.Assign i e) = undefined
 
 binop :: (Operand -> Operand -> LLVMBuilder Operand) -> AST.Expr -> AST.Expr -> LLVMBuilder Operand
 binop f l r = do
