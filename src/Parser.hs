@@ -30,14 +30,11 @@ lexeme = L.lexeme sc
 symbol :: Text -> Parser Text
 symbol = L.symbol sc
 
-skip :: Applicative m => m open -> m a -> m a
-skip open p = open *> p
-
 startBy :: (Alternative m) => m a -> m sep -> m [a]
 startBy p sep = many (sep *> p)
 
 pName :: Parser Name
-pName = (:) <$> letterChar <*> many alphaNumChar <?> "<name>"
+pName = (:) <$> letterChar <*> many alphaNumChar <?> "<identifier>"
 
 parens :: Parser a -> Parser a
 parens = between (symbol "(") (symbol ")")
@@ -81,7 +78,7 @@ prefix name f = Prefix (f <$ symbol name)
 postfix name f = Postfix (f <$ symbol name)
 
 pProg :: Parser Prog
-pProg = Prog <$> pExpr `sepEndBy` symbol ";"
+pProg = Prog <$> pExpr `sepEndBy1` symbol ";"
 
 parseProg :: String -> Either (ParseErrorBundle Text Void) Prog
 parseProg input = parse pProg "" (pack input)

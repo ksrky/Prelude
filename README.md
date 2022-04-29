@@ -18,7 +18,7 @@ $ stack runghc src/REPL.hs
 
 ## Build & Run
 ```command
-$ stack run examples/ex.pld
+$ stack run examples/ex.prl
 $ llc examples/ex.ll
 $ gcc examples/ex.s -o examples/ex
 $ ./examples/ex
@@ -26,6 +26,6 @@ $ ./examples/ex
 
 ### Check output easily
 ```command
-$ stack run examples/ex.pld
+$ stack run examples/ex.prl
 $ lli examples/ex.ll
 ```
