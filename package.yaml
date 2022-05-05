@@ -23,6 +23,7 @@ dependencies:
 - base >= 4.7 && < 5
 - text
 - filepath
+- bytestring
 - megaparsec
 - llvm-hs-pure
 - llvm-hs-pretty

@@ -30,9 +30,6 @@ lexeme = L.lexeme sc
 symbol :: Text -> Parser Text
 symbol = L.symbol sc
 
-startBy :: (Alternative m) => m a -> m sep -> m [a]
-startBy p sep = many (sep *> p)
-
 pName :: Parser Name
 pName = (:) <$> letterChar <*> many alphaNumChar <?> "<identifier>"
 
@@ -49,24 +46,24 @@ pTerm :: Parser Expr
 pTerm = try (parens pExpr) <|> pVar <|> pInt
 
 pExpr :: Parser Expr
-pExpr = lexeme $ try (makeExprParser pTerm operatorTable) <|> pAssign
+pExpr = lexeme (try pAssign <|> makeExprParser pTerm operatorTable)
 
 pAssign :: Parser Expr
-pAssign = Assign <$> pName <* symbol "=" <*> pExpr
+pAssign = Assign <$> pName <* symbol ":=" <*> pExpr
 
 operatorTable :: [[Operator Parser Expr]]
 operatorTable =
         [
-                [ prefix "-" Neg
+                [ prefix "-" (UnOp Minus)
                 , prefix "+" id
                 ]
         ,
-                [ binary "*" Mul
-                , binary "/" Div
+                [ binary "*" (BinOp Times)
+                , binary "/" (BinOp Divide)
                 ]
         ,
-                [ binary "+" Add
-                , binary "-" Sub
+                [ binary "+" (BinOp Plus)
+                , binary "-" (BinOp Minus)
                 ]
         ]
 

@@ -26,7 +26,9 @@ source-repository head
 library
   exposed-modules:
       AST
+      Codegen
       Compiler
+      Emit
       Environment
       Error
       Evaluator
@@ -38,6 +40,7 @@ library
       src
   build-depends:
       base >=4.7 && <5
+    , bytestring
     , containers
     , filepath
     , haskeline
@@ -58,6 +61,7 @@ executable prelude-exe
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , bytestring
     , containers
     , filepath
     , haskeline
@@ -80,6 +84,7 @@ test-suite prelude-test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , bytestring
     , containers
     , filepath
     , haskeline

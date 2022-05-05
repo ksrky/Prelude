@@ -5,12 +5,11 @@ type Name = String
 data Expr
         = Var Name
         | Int Integer
-        | Neg Expr
-        | Add Expr Expr
-        | Sub Expr Expr
-        | Mul Expr Expr
-        | Div Expr Expr
+        | UnOp Op Expr
+        | BinOp Op Expr Expr
         | Assign Name Expr
-        deriving (Eq, Show)
+        deriving (Eq, Ord, Show)
+
+data Op = Plus | Minus | Times | Divide deriving (Eq, Ord, Show)
 
 newtype Prog = Prog [Expr] deriving (Eq, Show)

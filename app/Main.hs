@@ -1,20 +1,32 @@
 module Main where
 
 import Compiler (compile)
+import Parser (parseError, parseProg)
+
 import Data.Text (unpack)
 import qualified Data.Text.IO as T
 import qualified Data.Text.Lazy.IO as LT
-import Parser (parseError, parseProg)
-import System.Environment (getArgs)
+
+import System.Console.Haskeline
+import System.Environment
 import System.FilePath.Posix (replaceExtension)
+import System.IO
 
 main :: IO ()
 main = do
         args <- getArgs
-        let srcPath = head args
-        let distPath = replaceExtension srcPath ".ll"
-        src <- T.readFile srcPath
-        let result = parseProg (unpack src)
-        case result of
-                Right ast -> LT.writeFile distPath (compile ast)
-                Left e -> putStrLn $ parseError e
+        case args of
+                [] -> repl
+                fname : _ -> process fname
+
+repl :: IO ()
+repl = undefined
+
+process :: String -> IO ()
+process fname = do
+        let src = "examples/" ++ fname
+            dist = replaceExtension src ".ll"
+        input <- readFile src
+        case parseProg input of
+                Left err -> putStrLn $ parseError err
+                Right exp -> LT.writeFile dist (compile exp)

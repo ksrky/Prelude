@@ -22,11 +22,12 @@ instance Eval Expr where
                         Just val -> return (val, env)
                         Nothing -> returnErr $ "variable not found: " ++ i
         eval (Int i) = return i
-        eval (Neg e) = (0 -) <$> eval e
-        eval (Add l r) = binop (+) l r
-        eval (Sub l r) = binop (-) l r
-        eval (Mul l r) = binop (*) l r
-        eval (Div l r) = binop div l r
+        eval (UnOp Minus e) = (0 -) <$> eval e
+        eval (UnOp _ _) = undefined
+        eval (BinOp Plus l r) = binop (+) l r
+        eval (BinOp Minus l r) = binop (-) l r
+        eval (BinOp Times l r) = binop (*) l r
+        eval (BinOp Divide l r) = binop div l r
         eval (Assign i e) = do
                 val <- eval e
                 env <- get
