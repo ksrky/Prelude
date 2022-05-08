@@ -6,13 +6,21 @@ import AST
 import Data.Kind (Type)
 import qualified Data.Map.Strict as M
 
-newtype Env = Env {store :: M.Map Name Integer}
+data Env = Env {table :: M.Map Name Integer, outer :: Env} | Outermost
 
-newEnv :: Env
-newEnv = Env{store = M.empty}
+newEnv :: Env -> Env
+newEnv e = Env{table = M.empty, outer = e}
 
-envGet :: Env -> Name -> Maybe Integer
-envGet env name = M.lookup name (store env)
+topEnv :: Env
+topEnv = newEnv Outermost
 
-envSet :: Env -> Name -> Integer -> Env
-envSet env name value = env{store = M.insert name value (store env)}
+look :: Env -> Name -> Maybe Integer
+look env name = M.lookup name (table env)
+
+isIn :: Name -> Env -> Bool
+isIn name env = case look env name of
+    Just _ -> True
+    _ -> False
+
+store :: Env -> Name -> Integer -> Env
+store env name value = env{table = M.insert name value (table env)}

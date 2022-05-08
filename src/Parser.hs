@@ -36,20 +36,23 @@ pName = (:) <$> letterChar <*> many alphaNumChar <?> "<identifier>"
 parens :: Parser a -> Parser a
 parens = between (symbol "(") (symbol ")")
 
+-------------------------------------------------------------------
+-- Expr
+-------------------------------------------------------------------
 pVar :: Parser Expr
 pVar = Var <$> lexeme pName
 
 pInt :: Parser Expr
 pInt = Int <$> lexeme L.decimal
 
+pCall :: Parser Expr
+pCall = Call <$> pName <*> parens (pExpr `sepBy` symbol ",")
+
 pTerm :: Parser Expr
 pTerm = try (parens pExpr) <|> pVar <|> pInt
 
 pExpr :: Parser Expr
-pExpr = lexeme (try pAssign <|> makeExprParser pTerm operatorTable)
-
-pAssign :: Parser Expr
-pAssign = Assign <$> pName <* symbol ":=" <*> pExpr
+pExpr = lexeme $ makeExprParser pTerm operatorTable
 
 operatorTable :: [[Operator Parser Expr]]
 operatorTable =
@@ -74,8 +77,29 @@ prefix, postfix :: Text -> (Expr -> Expr) -> Operator Parser Expr
 prefix name f = Prefix (f <$ symbol name)
 postfix name f = Postfix (f <$ symbol name)
 
+-------------------------------------------------------------------
+-- Stmt
+-------------------------------------------------------------------
+pVarDecl :: Parser Stmt
+pVarDecl = VarDecl <$> (symbol "var" *> pName) <* symbol "=" <*> pExpr
+
+pFuncDecl :: Parser Stmt
+pFuncDecl = FuncDecl <$> (symbol "def" *> pName) <*> parens (pName `sepBy` symbol ",") <*> pExpr
+
+pAssign :: Parser Stmt
+pAssign = Assign <$> pName <* symbol "=" <*> pExpr
+
+pExprStmt :: Parser Stmt
+pExprStmt = ExprStmt <$> pExpr
+
+pStmt :: Parser Stmt
+pStmt = pVarDecl <|> pFuncDecl <|> pAssign
+
+-------------------------------------------------------------------
+-- Prog
+-------------------------------------------------------------------
 pProg :: Parser Prog
-pProg = Prog <$> pExpr `sepEndBy1` symbol ";"
+pProg = Prog <$> pStmt `sepEndBy1` symbol ";"
 
 parseProg :: String -> Either (ParseErrorBundle Text Void) Prog
 parseProg input = parse pProg "" (pack input)

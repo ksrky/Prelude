@@ -59,6 +59,7 @@ external retty label argtys =
                                 , returnType = retty
                                 , basicBlocks = []
                                 }
+
 defineVar :: Type -> String -> C.Constant -> LLVM ()
 defineVar retty label val =
         addDefn $
